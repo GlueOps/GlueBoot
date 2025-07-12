@@ -36,7 +36,9 @@ network:
     default:
       dhcp4: true
       dhcp6: true
-      
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+
 package_update: true
 package_upgrade: true
 packages:

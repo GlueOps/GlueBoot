@@ -27,6 +27,7 @@ fi
 cat <<EOF >/etc/dnsmasq.d/ovsbr0.conf
 interface=br0
 dhcp-range=$LAN_START_IP,$LAN_END_IP,12h
+dhcp-option=6,8.8.8.8,1.1.1.1
 EOF
 
 systemctl restart dnsmasq
