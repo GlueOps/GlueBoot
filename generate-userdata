@@ -25,6 +25,11 @@ awk '{print "      - "$0}' ~/.ssh/authorized_keys
 
 cat <<EOF
 
+chpasswd:
+  list: |
+    root:MySecretPassword
+  expire: false
+
 package_update: true
 package_upgrade: true
 packages:
