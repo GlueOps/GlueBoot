@@ -29,6 +29,7 @@ EOF
 systemctl restart dnsmasq
 
 IMG_URL="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+IMG="$PWD/noble-server.img"
 
 wget -O $IMG $IMG_URL
 ./generate-userdata
