@@ -44,12 +44,17 @@ cloud-localds user-data.img user-data.yaml meta-data
 
 qemu-img create -f qcow2 -F qcow2 -b "$IMG" "$VM_DISK" 30G
 
+mkdir -p /var/lib/libvirt/images/myvms
+mv noble-server.img noble-server-vm1.qcow2 user-data.img /var/lib/libvirt/images/myvms/
+chmod 644 /var/lib/libvirt/images/myvms/*
+chmod 755 /var/lib/libvirt/images/myvms
+
 virt-install \
   --name k3dnode1 \
   --ram 4096 \
   --vcpus 2 \
-  --disk path=$VM_DISK,format=qcow2,size=30 \
-  --disk path=user-data.img,device=cdrom \
+  --disk path=/var/lib/libvirt/images/myvms/noble-server-vm1.qcow2,format=qcow2 \
+  --disk path=/var/lib/libvirt/images/myvms/user-data.img,device=cdrom \
   --os-variant ubuntu22.04 \
   --network bridge=br0,model=virtio \
   --graphics none \
