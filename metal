@@ -6,24 +6,28 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `osxprep.sh` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils openvswitch-switch virtinst dnsmasq cloud-image-utils cloud-utils -y
+apt install qemu-kvm libvirt-daemon-system qemu-guest-agent libvirt-clients bridge-utils openvswitch-switch virtinst dnsmasq cloud-image-utils cloud-utils -y
 systemctl enable libvirtd
 systemctl start libvirtd
 systemctl enable openvswitch-switch
 systemctl start openvswitch-switch
+systemctl enable qemu-guest-agent --now
 
 PRIMARY_IFACE=$(ip route | awk '/default/ {print $5; exit}' | grep -v '^docker\|^br\|^ovs')
 echo "Primary interface detected: $PRIMARY_IFACE"
+LAN_SUBNET=10.200.0.0/16
+LAN_START_IP=10.200.0.10
+LAN_END_IP=10.200.255.200
 
 if ! ovs-vsctl br-exists br0; then
     ovs-vsctl add-br br0
-    ip addr add 10.200.0.0/16 dev br0
+    ip addr add $LAN_SUBNET dev br0
     ip link set br0 up
 fi
 
 cat <<EOF >/etc/dnsmasq.d/ovsbr0.conf
 interface=br0
-dhcp-range=192.168.100.10,192.168.100.100,12h
+dhcp-range=$LAN_START_IP,$LAN_END_IP,12h
 EOF
 
 systemctl restart dnsmasq
@@ -61,7 +65,14 @@ virt-install \
   --disk path=/var/lib/libvirt/images/myvms/noble-server-vm1.qcow2,format=qcow2 \
   --disk path=/var/lib/libvirt/images/myvms/user-data.img,device=cdrom \
   --os-variant ubuntu22.04 \
-  --network bridge=br0,model=virtio \
+  --network bridge=br0,model=virtio,virtualport_type=openvswitch \
   --graphics none \
   --noautoconsole \
+  --channel unix,mode=bind,target_type=virtio,name=org.qemu.guest_agent.0 \
   --import
+
+
+sysctl -w net.ipv4.ip_forward=1
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+iptables -t nat -A POSTROUTING -s $LAN_SUBNET -o $PRIMARY_IFACE -j MASQUERADE
+iptables -A FORWARD -j ACCEPT

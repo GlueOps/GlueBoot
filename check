@@ -32,7 +32,7 @@ fi
 check_kvm_ok
 kvm_ok_status=$?
 
-if [[ "$virt_type" == "kvm" || $kvm_ok_status -eq 0 ]]; then
+if [ $kvm_ok_status -eq 0 ]; then
     echo "Metal system detected: Installing KVM & Open vSwitch for LAN bridging..."
     ./metal
 else
