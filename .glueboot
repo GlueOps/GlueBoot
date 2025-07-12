@@ -25,6 +25,14 @@ function runGlueBoot() {
             echo ""
             ./osprep
         fi
+        if [ $ARG == "check" ] || [ $ARG == "all" ]; then
+            echo ""
+            echo "------------------------------"
+            echo "Detecting Metal or Cloud"
+            echo "------------------------------"
+            echo ""
+            ./check
+        fi
     done
 }
 

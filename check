@@ -1,0 +1,36 @@
+#!/bin/bash
+export DEBIAN_FRONTEND=noninteractive
+
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until `osxprep.sh` has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+check_kvm_ok() {
+    if command -v kvm-ok &>/dev/null; then
+        kvm_ok_output=$(kvm-ok 2>&1)
+        echo "$kvm_ok_output" | grep -q "KVM acceleration can be used"
+        if [ $? -eq 0 ]; then
+            echo "kvm-ok: KVM acceleration is available."
+            return 0
+        else
+            echo "kvm-ok: KVM acceleration is NOT available."
+            return 1
+        fi
+    else
+        echo "kvm-ok command not found; skipping kvm-ok check."
+        return 2
+    fi
+}
+
+virt_type=$(hostnamectl | grep Virtualization | awk '{print $2}')
+
+if ! command -v kmv-ok &> /dev/null; then
+    apt install cpu-checker -y
+fi
+
+check_kvm_ok
+kvm_ok_status=$?
+
+echo $kvm_ok_status
+echo $virt_type

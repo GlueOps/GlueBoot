@@ -9,4 +9,4 @@ echo "Updating the OS.  If this requires a restart, run the script again."
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt update && apt upgrade -y
+apt update && apt upgrade -y && apt autoremove -y
