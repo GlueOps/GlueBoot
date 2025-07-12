@@ -45,9 +45,13 @@ cloud-localds user-data.img user-data.yaml meta-data
 qemu-img create -f qcow2 -F qcow2 -b "$IMG" "$VM_DISK" 30G
 
 mkdir -p /var/lib/libvirt/images/myvms
-mv noble-server.img noble-server-vm1.qcow2 user-data.img /var/lib/libvirt/images/myvms/
+mv noble-server.img user-data.img /var/lib/libvirt/images/myvms/
 chmod 644 /var/lib/libvirt/images/myvms/*
 chmod 755 /var/lib/libvirt/images/myvms
+
+cd /var/lib/libvirt/images/myvms
+qemu-img create -f qcow2 -F qcow2 -b "$IMG" "$VM_DISK" 30G
+
 
 virt-install \
   --name k3dnode1 \
