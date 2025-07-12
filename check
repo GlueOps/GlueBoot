@@ -33,10 +33,10 @@ check_kvm_ok
 kvm_ok_status=$?
 
 if [[ "$virt_type" == "kvm" || $kvm_ok_status -eq 0 ]]; then
-    echo "Virtualization is kvm. Installing k3d..."
-else
     echo "Metal system detected: Installing KVM & Open vSwitch for LAN bridging..."
     ./metal
+else
+    echo "Virtualization is kvm. Installing k3d..."
 fi
 
 
