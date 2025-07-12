@@ -6,7 +6,7 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `osxprep.sh` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils openvswitch-switch virtinst dnsmasq cloud-image-utils cloud-utils -y
+apt install qemu-kvm iptables-persistent libvirt-daemon-system libvirt-clients bridge-utils openvswitch-switch virtinst dnsmasq cloud-image-utils cloud-utils -y
 systemctl enable libvirtd
 systemctl start libvirtd
 systemctl enable openvswitch-switch
@@ -62,6 +62,7 @@ virt-install \
   --name k3dnode1 \
   --ram 4096 \
   --vcpus 2 \
+  --cpu kvm64 \
   --disk path=/var/lib/libvirt/images/myvms/noble-server-vm1.qcow2,format=qcow2 \
   --disk path=/var/lib/libvirt/images/myvms/user-data.img,device=cdrom \
   --os-variant ubuntu22.04 \
@@ -76,3 +77,20 @@ sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 iptables -t nat -A POSTROUTING -s $LAN_SUBNET -o $PRIMARY_IFACE -j MASQUERADE
 iptables -A FORWARD -j ACCEPT
+
+cat <<EOF >/etc/netplan/99-ovsbr0.yaml
+network:
+  version: 2
+  bridges:
+    br0:
+      addresses: [10.200.0.1/16]
+      parameters:
+        stp: false
+      interfaces: []
+      dhcp4: no
+EOF
+
+chmod 0600 /etc/netplan/99-ovsbr0.yaml
+netplan apply
+
+netfilter-persistent save
