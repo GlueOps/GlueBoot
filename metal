@@ -6,12 +6,11 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `osxprep.sh` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-apt install qemu-kvm libvirt-daemon-system qemu-guest-agent libvirt-clients bridge-utils openvswitch-switch virtinst dnsmasq cloud-image-utils cloud-utils -y
+apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils openvswitch-switch virtinst dnsmasq cloud-image-utils cloud-utils -y
 systemctl enable libvirtd
 systemctl start libvirtd
 systemctl enable openvswitch-switch
 systemctl start openvswitch-switch
-systemctl enable qemu-guest-agent --now
 
 PRIMARY_IFACE=$(ip route | awk '/default/ {print $5; exit}' | grep -v '^docker\|^br\|^ovs')
 echo "Primary interface detected: $PRIMARY_IFACE"
