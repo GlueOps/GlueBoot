@@ -1,0 +1,43 @@
+#!/bin/bash
+
+function runGlueBoot() {
+    # Ensure we're sudu
+    sudo -v
+
+    # Keep-alive: update existing `sudo` time stamp until the script has finished
+    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+    for ARG in "$@"
+    do
+        if [$ARG == "bootstrap"] || [$ARG == "all"]; then
+            echo ""
+            echo "------------------------------"
+            echo "Syncing the repo to your local machine."
+            echo "------------------------------"
+            echo ""
+            cd ~ && curl -#L https://github.com/DragonDevCC/GlueBoot/tarball/master | tar -xzv --strip-components 1 --exclude={README.md}
+        fi
+        if [$ARG == "osprep"] || [$ARG == "all"]; then
+            echo ""
+            echo "------------------------------"
+            echo "Updating OS and installing tools"
+            echo "------------------------------"
+            echo ""
+            ./osprep
+        fi
+    done
+}
+
+set -e
+
+export DEBIAN_FRONTEND=noninteractive
+
+apt update && apt upgrade -y
+apt install curl wget git -y
+
+git clone https://github.com/DragonDevCC/GlueBoot.git
+
+bash GlueBoot/preflight.sh
+
+
+
