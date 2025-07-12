@@ -39,7 +39,4 @@ else
     ./metal
 fi
 
-echo $kvm_ok_status
-echo $virt_type
-
 
