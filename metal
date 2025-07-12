@@ -29,8 +29,6 @@ EOF
 systemctl restart dnsmasq
 
 IMG_URL="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
-IMG="$PWD/noble-server.img"
-VM_DISK="$PWD/noble-server-vm1.qcow2"
 
 wget -O $IMG $IMG_URL
 ./generate-userdata
@@ -42,14 +40,16 @@ EOF
 
 cloud-localds user-data.img user-data.yaml meta-data
 
-qemu-img create -f qcow2 -F qcow2 -b "$IMG" "$VM_DISK" 30G
-
 mkdir -p /var/lib/libvirt/images/myvms
 mv noble-server.img user-data.img /var/lib/libvirt/images/myvms/
 chmod 644 /var/lib/libvirt/images/myvms/*
 chmod 755 /var/lib/libvirt/images/myvms
 
 cd /var/lib/libvirt/images/myvms
+
+IMG="$PWD/noble-server.img"
+VM_DISK="$PWD/noble-server-vm1.qcow2"
+
 qemu-img create -f qcow2 -F qcow2 -b "$IMG" "$VM_DISK" 30G
 
 
