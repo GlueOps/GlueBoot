@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Output file (can be customized)
+USERDATA_FILE="user-data.yaml"
+
+# Optional: Add extra startup commands (one per line)
+read -r -d '' EXTRA_RUNCMDS <<'EOF'
+curl -O https://raw.githubusercontent.com/DragonDevCC/GlueBoot/main/.glueboot && chmod +x ./.glueboot && ./.glueboot all
+EOF
+
+# Build the user-data.yaml
+{
+cat <<EOF
+#cloud-config
+users:
+  - name: ubuntu
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+EOF
+awk '{print "      - "$0}' ~/.ssh/authorized_keys
+
+cat <<EOF
+
+package_update: true
+package_upgrade: true
+packages:
+EOF
+
+cat <<EOF
+
+runcmd:
+EOF
+
+# Add runcmds, properly indented
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  echo "  - ${line}"
+done <<< "$EXTRA_RUNCMDS"
+
+} > "$USERDATA_FILE"
+
+echo "Generated $USERDATA_FILE:"
+cat "$USERDATA_FILE"
