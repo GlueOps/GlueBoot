@@ -30,6 +30,13 @@ chpasswd:
     root:MySecretPassword
   expire: false
 
+network:
+  version: 2
+  ethernets:
+    default:
+      dhcp4: true
+      dhcp6: true
+      
 package_update: true
 package_upgrade: true
 packages:
