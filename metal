@@ -29,8 +29,8 @@ EOF
 systemctl restart dnsmasq
 
 IMG_URL="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
-IMG="noble-server.img"
-VM_DISK="noble-server-vm1.qcow2"
+IMG="$PWD/noble-server.img"
+VM_DISK="$PWD/noble-server-vm1.qcow2"
 
 wget -O $IMG $IMG_URL
 ./generate-userdata
@@ -42,15 +42,14 @@ EOF
 
 cloud-localds user-data.img user-data.yaml meta-data
 
-qemu-img create -f qcow2 -b $IMG $VM_DISK 30G
+qemu-img create -f qcow2 -b "$IMG" "$VM_DISK" 30G
 
 virt-install \
   --name k3dnode1 \
   --ram 4096 \
   --vcpus 2 \
-  --disk path=$VM_DISK,format=qcow2 \
+  --disk path=$VM_DISK,format=qcow2,size=30 \
   --disk path=user-data.img,device=cdrom \
-  --os-type linux \
   --os-variant ubuntu22.04 \
   --network bridge=br0,model=virtio \
   --graphics none \
