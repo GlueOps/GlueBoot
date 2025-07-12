@@ -42,7 +42,7 @@ EOF
 
 cloud-localds user-data.img user-data.yaml meta-data
 
-qemu-img create -f qcow2 -b "$IMG" "$VM_DISK" 30G
+qemu-img create -f qcow2 -F qcow2 -b "$IMG" "$VM_DISK" 30G
 
 virt-install \
   --name k3dnode1 \
