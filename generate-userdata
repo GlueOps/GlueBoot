@@ -7,7 +7,7 @@ USERDATA_FILE="user-data.yaml"
 read -r -d '' EXTRA_RUNCMDS <<'EOF'
 sudo apt update && sudo apt install qemu-guest-agent -y
 sudo systemctl enable qemu-guest-agent --now
-curl -O https://raw.githubusercontent.com/DragonDevCC/GlueBoot/main/.glue-boot && chmod +x ./.glue-boot && ./.glue-boot all
+curl -O https://raw.githubusercontent.com/GlueOps/GlueBoot/main/.glue-boot && chmod +x ./.glue-boot && ./.glue-boot all
 EOF
 
 # Build the user-data.yaml
