@@ -36,6 +36,8 @@ network:
     default:
       dhcp4: true
       dhcp6: true
+      dhcp4-overrides:
+        use-dns: false
       nameservers:
         addresses: [8.8.8.8, 1.1.1.1]
 
