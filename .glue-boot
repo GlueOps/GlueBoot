@@ -15,7 +15,7 @@ function runGlueBoot() {
             echo "Syncing the repo to your local machine."
             echo "------------------------------"
             echo ""
-            cd ~ && curl -#L https://github.com/DragonDevCC/GlueBoot/tarball/main | tar -xzv --strip-components 1 --exclude={README.md}
+            cd ~ && curl -#L https://github.com/GlueOps/GlueBoot/tarball/main | tar -xzv --strip-components 1 --exclude={README.md}
         fi
         if [ $ARG == "osprep" ] || [ $ARG == "all" ]; then
             echo ""

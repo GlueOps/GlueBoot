@@ -20,3 +20,11 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 install -o root -g root -m 0755 kubectl-convert /usr/local/bin/kubectl-convert
 k3d completion bash >> ~/.bashrc
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+sysctl fs.inotify.max_user_watches=524288
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+
+sysctl fs.inotify.max_user_instances=512
+echo fs.inotify.max_user_instances=512 | sudo tee -a /etc/sysctl.conf
+
+sysctl -p
